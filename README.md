@@ -14,7 +14,7 @@ Overview and instructions
 - Use the 'sample-load-data.xml' for loading xml with multiple email notifications through UI. 
 - Sample json request for testing sending one emal notification through API 
 https://localhost:5000/api/EmailNotifications 
-	{
+	```{
 		"ClientId": 2,
 		"TemplateId": 2,
 		"Recipients": [
@@ -26,7 +26,7 @@ https://localhost:5000/api/EmailNotifications
 		  "Url": "https://testsite.com/promo",
 		  "UnsubscribeUrl": "https://testsite.com/unsubscribe"
 		}
-	}
+	}```
 
 UI project: 
 https://localhost:5002/
