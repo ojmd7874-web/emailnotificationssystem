@@ -18,5 +18,6 @@ Clients UI:
 <img width="1431" height="519" alt="image" src="https://github.com/user-attachments/assets/3069f98e-4d2b-4c7c-86cb-78b4de9c4ba9" />
 Templates UI:
 <img width="1411" height="764" alt="image" src="https://github.com/user-attachments/assets/6f7f23d2-b372-44c0-976e-1aaff2dcd3ab" />
-
+Swagger:
+<img width="1498" height="823" alt="image" src="https://github.com/user-attachments/assets/be0366b1-cb0a-4845-8f78-cbaff21245e5" />
 
