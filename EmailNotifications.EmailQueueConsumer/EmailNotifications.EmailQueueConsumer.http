@@ -1,0 +1,6 @@
+@EmailNotifications.EmailQueueConsumer_HostAddress = http://localhost:5057
+
+GET {{EmailNotifications.EmailQueueConsumer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,212 @@
+﻿@page "/templates"
+@using EmailNotifications.Application.Dtos
+@using Services
+@inject ITemplateService TemplatesService
+
+<h3>Email Templates</h3>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="list-group">
+            <button class="list-group-item list-group-item-action @(selectedTemplateId == 0 ? "active" : "")" @onclick="() => SelectTemplate(0)">
+                + Create new template
+            </button>
+            @if (templates != null)
+            {
+                @foreach (var t in templates)
+                {
+                    <button class="list-group-item list-group-item-action @(selectedTemplateId == t.Id ? "active" : "")" @onclick="() => SelectTemplate(t.Id)">
+                        @t.Name
+                    </button>
+                }
+            }
+        </div>
+    </div>
+    <div class="col-md-8">
+        <EditForm Model="@editModel" OnValidSubmit="@SaveAsync">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label">Template Name *</label>
+                <InputText class="form-control" @bind-Value="editModel.Name" placeholder="Enter template name" />
+                <ValidationMessage For="@(() => editModel.Name)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email Subject *</label>
+                <InputText class="form-control" @bind-Value="editModel.EmailSubject" placeholder="Enter email subject" />
+                <ValidationMessage For="@(() => editModel.EmailSubject)" />
+            </div>
+
+            <div class="mb-3 form-check">
+                <InputCheckbox class="form-check-input" @bind-Value="editModel.IsHtmlContent" />
+                <label class="form-check-label">HTML Content</label>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email Content *</label>
+                <InputTextArea class="form-control" rows="10" @bind-Value="editModel.EmailContent"
+                               placeholder="Enter your email content here. Use {{Placeholder}} for dynamic values." />
+                <ValidationMessage For="@(() => editModel.EmailContent)" />
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" type="submit" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span> Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save Template</span>
+                    }
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="NewTemplate" disabled="@isSaving">
+                    New Template
+                </button>
+            </div>
+
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div class="alert @alertClass mt-3">@message</div>
+            }
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private List<TemplateDto>? templates;
+    private int selectedTemplateId = -1;
+
+    // Mutable UI model used by the component for two-way binding
+    private TemplateEditModel editModel = new();
+
+    private bool isSaving = false;
+    private string? message;
+    private string alertClass = "alert-info";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTemplatesAsync();
+        NewTemplate();
+    }
+
+    private async Task LoadTemplatesAsync()
+    {
+        try
+        {
+            templates = await TemplatesService.GetAllTemplatesAsync();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error loading templates: {ex.Message}";
+            alertClass = "alert-danger";
+            StateHasChanged();
+        }
+    }
+
+    private void SelectTemplate(int id)
+    {
+        selectedTemplateId = id;
+        if (id == 0)
+        {
+            NewTemplate();
+            return;
+        }
+
+        var t = templates?.FirstOrDefault(x => x.Id == id);
+        if (t != null)
+        {
+            editModel = new TemplateEditModel
+            {
+                Id = t.Id,
+                Name = t.Name,
+                EmailSubject = t.EmailSubject,
+                EmailContent = t.EmailContent,
+                IsHtmlContent = t.IsHtmlContent
+            };
+            message = null;
+            StateHasChanged();
+        }
+    }
+
+    private void NewTemplate()
+    {
+        // reset selection and model so we create a fresh template (no duplicate due to old Id)
+        selectedTemplateId = 0;
+        editModel = new TemplateEditModel
+        {
+            Id = null,
+            Name = string.Empty,
+            EmailSubject = string.Empty,
+            EmailContent = string.Empty,
+            IsHtmlContent = true
+        };
+        message = null;
+        alertClass = "alert-info";
+        StateHasChanged();
+    }
+
+    private async Task SaveAsync()
+    {
+        isSaving = true;
+        message = null;
+        StateHasChanged();
+
+        try
+        {
+            // map UI model to request
+            var request = new TemplateRequest(
+                editModel.Id,
+                editModel.Name ?? string.Empty,
+                editModel.EmailSubject ?? string.Empty,
+                editModel.EmailContent ?? string.Empty,
+                editModel.IsHtmlContent
+            );
+
+            var savedDto = await TemplatesService.SaveTemplateAsync(request);
+
+            if (savedDto != null)
+            {
+                // ensure server id is applied, then reset inputs to avoid accidental duplicate creates
+                editModel.Id = savedDto.Id;
+
+                // Refresh list
+                await LoadTemplatesAsync();
+
+                // Important: reset the form to a clean state so user doesn't accidentally re-save same content
+                NewTemplate();
+
+                message = "Template saved successfully!";
+                alertClass = "alert-success";
+            }
+            else
+            {
+                message = "Failed to save template";
+                alertClass = "alert-danger";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error saving template: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+
+    // Mutable UI model class
+    private class TemplateEditModel
+    {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public string? EmailSubject { get; set; }
+        public string? EmailContent { get; set; }
+        public bool IsHtmlContent { get; set; } = true;
+    }
+}

@@ -1,0 +1,172 @@
+﻿@page "/client"
+@using EmailNotifications.Application.Dtos
+@using Services
+@using Microsoft.AspNetCore.Components
+@inject IClientService ClientService
+
+<h3>Client configuration</h3>
+
+<div class="card">
+    <div class="card-body">
+        <div class="mb-4">
+            <label class="form-label"><strong>Select client:</strong></label>
+            <select class="form-select" @onchange="OnSelectionChanged">
+                <option value="0">-- Create New Client --</option>
+                @if (clients != null)
+                {
+                    @foreach (var c in clients)
+                    {
+                        <option value="@c.Id">@c.Name - @c.Email</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <EditForm Model="@config" OnValidSubmit="@OnSave">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Client name *</label>
+                        <InputText class="form-control" @bind-Value="config.Name" placeholder="Enter client name" />
+                        <ValidationMessage For="@(() => config.Name)" />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">Email *</label>
+                        <InputText class="form-control" @bind-Value="config.Email" placeholder="Enter email address" />
+                        <ValidationMessage For="@(() => config.Email)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button class="btn btn-primary" type="submit" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="spinner-border spinner-border-sm" role="status"></span>
+                        <span> Saving...</span>
+                    }
+                    else
+                    {
+                        <span>Save Configuration</span>
+                    }
+                </button>
+                <button class="btn btn-outline-secondary" type="button" @onclick="ClearForm" disabled="@isSaving">
+                    Clear Form
+                </button>
+            </div>
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="alert alert-info mt-3 mb-0">@message</div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ClientConfigDto>? clients;
+    private ClientConfigDto config = new();
+    private string? message;
+    private bool isSaving = false;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClientsAsync();
+    }
+
+    private async Task LoadClientsAsync()
+    {
+        isLoading = true;
+        StateHasChanged();
+        
+        try
+        {
+            clients = await ClientService.GetAllClientsAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Error loading clients: {ex.Message}";
+            clients = new List<ClientConfigDto>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task OnSelectionChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null && int.TryParse(e.Value.ToString(), out int clientId))
+        {
+            await LoadClientData(clientId);
+        }
+    }
+
+    private async Task LoadClientData(int clientId)
+    {
+        if (clientId == 0)
+        {
+            // Clear form for new client
+            config = new ClientConfigDto();
+            message = "Ready to create new client";
+            StateHasChanged();
+            return;
+        }
+
+        // Find the selected client
+        var client = clients?.FirstOrDefault(c => c.Id == clientId);
+        if (client != null)
+        {
+            config.Id = client.Id;
+            config.Name = client.Name;
+            config.Email = client.Email;
+            
+            message = $"Loaded client: {client.Name}";
+            
+            StateHasChanged();
+        }
+        else
+        {
+            message = "Client not found";
+            StateHasChanged();
+        }
+    }
+
+    private void ClearForm()
+    {
+        config = new ClientConfigDto();
+        message = "Form cleared";
+        StateHasChanged();
+    }
+
+    private async Task OnSave()
+    {
+        isSaving = true;
+        message = null;
+        StateHasChanged();
+
+        try
+        {
+            var resp = await ClientService.SaveClientConfigAsync(config);
+            message = resp?.Message ?? "Configuration saved successfully!";
+
+            // Refresh the clients list
+            await LoadClientsAsync();
+        }
+        catch (Exception ex)
+        {
+            message = $"Save failed: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+            StateHasChanged();
+        }
+    }
+}

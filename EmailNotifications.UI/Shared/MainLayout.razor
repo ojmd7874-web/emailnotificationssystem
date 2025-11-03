@@ -1,0 +1,25 @@
+﻿@using Microsoft.AspNetCore.Components
+@inherits LayoutComponentBase
+
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
+        <a class="navbar-brand" href="/">Email Notifications</a>
+        <nav class="nav">
+            <a class="nav-link" href="/admin">Admin</a>
+            <a class="nav-link" href="/client">Clients</a>
+            <a class="nav-link" href="/templates">Templates</a>
+        </nav>
+    </header>
+
+    <main>
+        @Body
+    </main>
+
+    <footer class="border-top mt-4 pt-3">
+        <small class="text-muted">© @DateTime.Now.Year — EmailNotifications</small>
+    </footer>
+</div>
+
+@code {
+
+}

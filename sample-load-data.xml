@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EmailNotifications>
+  <EmailNotification>
+    <ClientId>1</ClientId>
+    <TemplateId>1</TemplateId>
+    <Recipients>
+      <Recipient>john.doe@example.com</Recipient>
+      <Recipient>sarah.wilson@test.org</Recipient>
+      <Recipient>mike.johnson@demo.net</Recipient>
+    </Recipients>
+    <MarketingData>{
+      "TemplateContent": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "Url": "https://example.com/special-offer",
+      "UnsubscribeUrl": "https://example.com/unsubscribe",
+      "PromoCode": "WELCOME20",
+      "ExpiryDate": "2024-12-31"
+    }</MarketingData>
+  </EmailNotification>
+  
+  <EmailNotification>
+    <ClientId>2</ClientId>
+    <TemplateId>2</TemplateId>
+    <Recipients>
+      <Recipient>emma.brown@sample.com</Recipient>
+      <Recipient>david.smith@mail.io</Recipient>
+    </Recipients>
+    <MarketingData>{
+      "TemplateContent": "Ut enim ad minim veniam, quis nostrud exercitation ullamco.",
+      "Url": "https://testsite.com/promo",
+      "UnsubscribeUrl": "https://testsite.com/unsubscribe"
+    }</MarketingData>
+  </EmailNotification>
+  
+  <EmailNotification>
+    <ClientId>3</ClientId>
+    <TemplateId>1</TemplateId>
+    <Recipients>
+      <Recipient>lisa.jones@webapp.com</Recipient>
+      <Recipient>robert.taylor@service.org</Recipient>
+      <Recipient>amanda.white@platform.net</Recipient>
+      <Recipient>kevin.martin@cloud.io</Recipient>
+    </Recipients>
+    <MarketingData>{
+      "TemplateContent": "Duis aute irure dolor in reprehenderit in voluptate velit.",
+      "Url": "https://myapp.com/feature-update",
+      "UnsubscribeUrl": "https://myapp.com/unsubscribe"
+    }</MarketingData>
+  </EmailNotification>
+  
+  <EmailNotification>
+    <ClientId>4</ClientId>
+    <TemplateId>2</TemplateId>
+    <Recipients>
+      <Recipient>peter.green@digital.com</Recipient>
+    </Recipients>
+    <MarketingData>{
+      "TemplateContent": "Excepteur sint occaecat cupidatat non proident, sunt in culpa.",
+      "Url": "https://brandsite.com/newsletter",
+      "UnsubscribeUrl": "https://brandsite.com/unsubscribe"
+    }</MarketingData>
+  </EmailNotification>
+  
+  <EmailNotification>
+    <ClientId>5</ClientId>
+    <TemplateId>1</TemplateId>
+    <Recipients>
+      <Recipient>sophia.davis@tech.org</Recipient>
+      <Recipient>james.wilson@innovate.net</Recipient>
+      <Recipient>olivia.moore@nextgen.com</Recipient>
+    </Recipients>
+    <MarketingData>{
+      "TemplateContent": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem.",
+      "Url": "https://startupxyz.com/launch",
+      "UnsubscribeUrl": "https://startupxyz.com/unsubscribe"
+    }</MarketingData>
+  </EmailNotification>
+</EmailNotifications>

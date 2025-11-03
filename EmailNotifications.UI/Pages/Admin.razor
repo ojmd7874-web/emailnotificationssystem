@@ -1,0 +1,128 @@
+﻿@page "/"
+@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@inject IXmlPublishService XmlPublishService
+@inject NavigationManager Navigation
+
+<h3>Admin</h3>
+
+<p>Upload an XML file with EmailNotification entries.</p>
+
+<EditForm Model="@formModel" OnValidSubmit="@OnLoadXmlAsync">
+    <div class="card">
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label">Select XML File:</label>
+                <InputFile OnChange="OnInputFileChange" class="form-control" />
+                <div class="form-text">Maximum file size: 10MB</div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" disabled="@(!hasFile || isLoading)">
+                @if (isLoading)
+                {
+                    <span class="spinner-border spinner-border-sm" role="status"></span>
+                    <span> Uploading...</span>
+                }
+                else
+                {
+                    <span>Upload XML File (Publish to Queue)</span>
+                }
+            </button>
+
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="alert @alertClass mt-3">@statusMessage</div>
+            }
+
+            @if (selectedFile != null)
+            {
+                <div class="mt-3">
+                    <strong>Selected File:</strong> @selectedFile.Name (@selectedFile.Size bytes)
+                </div>
+            }
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private IBrowserFile? selectedFile;
+    private bool hasFile => selectedFile != null;
+    private string statusMessage = string.Empty;
+    private bool isLoading = false;
+    private string alertClass = "alert-info";
+
+    private object formModel = new();
+
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.FileCount > 0 ? e.File : null;
+        statusMessage = string.Empty;
+
+        if (selectedFile != null && !selectedFile.Name.EndsWith(".xml", StringComparison.OrdinalIgnoreCase))
+        {
+            statusMessage = "Please select an XML file.";
+            alertClass = "alert-warning";
+            selectedFile = null;
+        }
+    }
+
+    private async Task OnLoadXmlAsync()
+    {
+        if (selectedFile == null)
+        {
+            statusMessage = "No file selected.";
+            alertClass = "alert-warning";
+            return;
+        }
+
+        isLoading = true;
+        statusMessage = "Processing XML file...";
+        alertClass = "alert-info";
+
+        StateHasChanged(); 
+
+        try
+        {
+            string xmlContent;
+            using (var stream = selectedFile.OpenReadStream()) 
+            using (var reader = new StreamReader(stream))
+            {
+                xmlContent = await reader.ReadToEndAsync();
+            }
+
+            if (string.IsNullOrWhiteSpace(xmlContent))
+            {
+                statusMessage = "The selected file is empty.";
+                alertClass = "alert-warning";
+                return;
+            }
+
+            // Process XML 
+            var publishedCount = await XmlPublishService.ParseAndPublishAsync(xmlContent);
+
+            if (publishedCount > 0)
+            {
+                statusMessage = $"Successfully published {publishedCount} email notifications to the queue.";
+                alertClass = "alert-success";
+                selectedFile = null; // Reset file selection
+            }
+            else
+            {
+                statusMessage = "No valid EmailNotification entries found in the XML file.";
+                alertClass = "alert-warning";
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"Error processing file: {ex.Message}";
+            alertClass = "alert-danger";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}
