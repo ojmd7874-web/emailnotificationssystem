@@ -26,7 +26,7 @@ https://localhost:5000/api/EmailNotifications
 		  "Url": "https://testsite.com/promo",
 		  "UnsubscribeUrl": "https://testsite.com/unsubscribe"
 		}
-	}```
+	}
 
 UI project: 
 https://localhost:5002/
