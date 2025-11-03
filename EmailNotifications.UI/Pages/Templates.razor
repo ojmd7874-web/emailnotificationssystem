@@ -170,13 +170,13 @@
 
             if (savedDto != null)
             {
-                // ensure server id is applied, then reset inputs to avoid accidental duplicate creates
+                // ensure server id is applied, then reset inputs to avoid duplicate creates
                 editModel.Id = savedDto.Id;
 
                 // Refresh list
                 await LoadTemplatesAsync();
 
-                // Important: reset the form to a clean state so user doesn't accidentally re-save same content
+                // reset the form to a clean state so user re-save same content
                 NewTemplate();
 
                 message = "Template saved successfully!";
@@ -200,7 +200,6 @@
         }
     }
 
-    // Mutable UI model class
     private class TemplateEditModel
     {
         public int? Id { get; set; }

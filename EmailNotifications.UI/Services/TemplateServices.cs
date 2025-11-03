@@ -7,45 +7,45 @@ namespace Services
 {
     public class TemplatesService : ITemplateService
     {
-        private readonly HttpClient _http;
+        private readonly HttpClient _httpClient;
 
         public TemplatesService(HttpClient http)
         {
-            _http = http;
+            _httpClient = http;
         }
 
         public async Task<List<TemplateDto>> GetAllTemplatesAsync()
         {
-            var resp = await _http.GetAsync("api/templates");
-            if (!resp.IsSuccessStatusCode) return new List<TemplateDto>();
-            var list = await resp.Content.ReadFromJsonAsync<List<TemplateDto>>();
-            return list ?? new List<TemplateDto>();
+            var result = await _httpClient.GetAsync("api/templates");
+            if (!result.IsSuccessStatusCode)
+            {
+                return new List<TemplateDto>();
+            }
+
+            var templates = await result.Content.ReadFromJsonAsync<List<TemplateDto>>();
+            return templates ?? new List<TemplateDto>();
         }
 
         public async Task<TemplateDto?> GetTemplateAsync(int id)
         {
-            var resp = await _http.GetAsync($"api/templates/{id}");
-            if (!resp.IsSuccessStatusCode) return null;
-            return await resp.Content.ReadFromJsonAsync<TemplateDto>();
+            var result = await _httpClient.GetAsync($"api/templates/{id}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            return await result.Content.ReadFromJsonAsync<TemplateDto>();
         }
 
         public async Task<TemplateDto?> SaveTemplateAsync(TemplateRequest request)
         {
-            var resp = await _http.PostAsJsonAsync("api/templates", request);
-            if (!resp.IsSuccessStatusCode)
+            var result = await _httpClient.PostAsJsonAsync("api/templates", request);
+            if (!result.IsSuccessStatusCode)
             {
-                // try to parse message
-                try
-                {
-                    return await resp.Content.ReadFromJsonAsync<TemplateDto>();
-                }
-                catch
-                {
-                    return null;
-                }
+                return null;
             }
 
-            return await resp.Content.ReadFromJsonAsync<TemplateDto>();
+            return await result.Content.ReadFromJsonAsync<TemplateDto>();
         }
     }
 }

@@ -48,11 +48,6 @@ namespace EmailNotifications.Application.Services
             return MapEntityToDto(client);
         }
 
-        private static ClientDto MapEntityToDto(Client entity)
-        {
-            return new ClientDto(entity.Id, entity.Name, entity.Email);
-        }
-
         public async Task<Response> SaveClientConfigAsync(ClientConfigDto request)
         {
             Client client = null;
@@ -87,6 +82,11 @@ namespace EmailNotifications.Application.Services
         {
             var clients = await _clientRepository.GetAllAsync();
             return clients.Select(MapEntityToDto).ToList();
+        }
+
+        private static ClientDto MapEntityToDto(Client entity)
+        {
+            return new ClientDto(entity.Id, entity.Name, entity.Email);
         }
     }
 }

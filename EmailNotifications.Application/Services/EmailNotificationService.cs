@@ -24,19 +24,19 @@ namespace EmailNotifications.Application.Services
             _configuration = configuration;
         }
 
-        public async Task<bool> SendEmailFromQueueMessage(EmailNotificationModel model)
+        public async Task SendEmailFromQueueMessage(EmailNotificationModel model)
         {
             var client = await _clientRepository.GetByIdAsync(model.ClientId);
             var template = await _templateRepository.GetByIdAsync(model.TemplateId);
             if (client == null || template == null) 
             {
-                return false;
+                return;
             }
 
             var renderedEmailContent = EmailRender.GenerateEmail(template.EmailContent, model.MarketingData);
-            if (renderedEmailContent == null)
+            if (string.IsNullOrEmpty(renderedEmailContent))
             {
-                return false;
+                return;
             }
 
             var emailMessage = new MailMessage
@@ -46,9 +46,7 @@ namespace EmailNotifications.Application.Services
                 Body = renderedEmailContent,
             };
 
-            return true;
-
-            //comment out because there is no actual email configuration set, if you want you can set it in appsettings.json
+            //commented out because there is no actual email configuration set, if you want you can set it in appsettings.json
             //await SendMailAsync(emailMessage);
         }
 
@@ -64,8 +62,6 @@ namespace EmailNotifications.Application.Services
                 },
                 EnableSsl = bool.Parse(_configuration["MailServer:EnableSsl"]!)
             };
-
-            message.From = new MailAddress(_configuration["MailServer:From"]!);
 
             await smtpClient.SendMailAsync(message);
         }

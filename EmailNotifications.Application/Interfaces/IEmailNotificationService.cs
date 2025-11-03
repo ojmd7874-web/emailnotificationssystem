@@ -9,6 +9,6 @@ namespace EmailNotifications.Application.Interfaces
 {
     public interface IEmailNotificationService
     {
-        Task<bool> SendEmailFromQueueMessage(EmailNotificationModel model);
+        Task SendEmailFromQueueMessage(EmailNotificationModel model);
     }
 }

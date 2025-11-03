@@ -39,7 +39,7 @@ public class TemplatesController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return BadRequest();
         }
 
         var result = await _templateService.SaveAsync(request);

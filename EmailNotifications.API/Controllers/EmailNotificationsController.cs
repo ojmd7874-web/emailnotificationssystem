@@ -36,25 +36,5 @@ namespace EmailNotifications.API.Controllers
             return Ok();
         }
 
-        //[HttpPost("bulk")]
-        //public async Task<IActionResult> SendBulkEmails(List<SendEmailRequest> requests)
-        //{
-        //    var tasks = requests.Select(request =>
-        //        _publishEndpoint.Publish<ISendEmail>(new
-        //        {
-        //            EmailId = Guid.NewGuid().ToString(),
-        //            request.To,
-        //            request.Subject,
-        //            request.Body,
-        //            request.IsHtml,
-        //            ScheduledFor = DateTime.UtcNow
-        //        })
-        //    );
-
-        //    await Task.WhenAll(tasks);
-
-        //    _logger.LogInformation("Queued {Count} emails for processing", requests.Count);
-        //    return Accepted(new { Message = $"{requests.Count} emails queued for processing" });
-        //}
     }
 }

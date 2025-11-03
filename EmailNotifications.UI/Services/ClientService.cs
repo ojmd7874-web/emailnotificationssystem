@@ -17,35 +17,41 @@ namespace Services
         public async Task<Response> SaveClientConfigAsync(ClientConfigDto model)
         {
             var result = await _httpClient.PostAsJsonAsync("api/clients/config", model);
+            if (!result.IsSuccessStatusCode)
+            {
+                return new Response { Success = false };
+            }
+
             return await result.Content.ReadFromJsonAsync<Response>();
         }
 
         public async Task<ClientDto?> GetClientConfigAsync(int id)
         {
             var result = await _httpClient.GetAsync($"api/clients/{id}");
+            if (!result.IsSuccessStatusCode)
+            {
+                return null;
+            }
 
-            var dto = await result.Content.ReadFromJsonAsync<ClientDto>();
-            if (dto == null) return null;
+            var client = await result.Content.ReadFromJsonAsync<ClientDto>();
+            if (client == null)
+            {
+                return null;
+            }
 
-            return new ClientDto(
-                dto.Id,
-                dto.Name,
-                dto.Email
-            );
+            return client;
         }
 
-        // New: fetch all clients (with full info) once on page load.
-        // The API should expose GET /api/clients returning the full client objects.
         public async Task<List<ClientConfigDto>> GetAllClientsAsync()
         {
-            var resp = await _httpClient.GetAsync("api/clients");
-            if (!resp.IsSuccessStatusCode)
+            var result = await _httpClient.GetAsync("api/clients");
+            if (!result.IsSuccessStatusCode)
             {
                 return new List<ClientConfigDto>();
             }
 
-            var list = await resp.Content.ReadFromJsonAsync<List<ClientConfigDto>>();
-            return list ?? new List<ClientConfigDto>();
+            var clients = await result.Content.ReadFromJsonAsync<List<ClientConfigDto>>();
+            return clients ?? new List<ClientConfigDto>();
         }
     }
 }

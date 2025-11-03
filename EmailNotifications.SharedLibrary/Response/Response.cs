@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace EmailNotifications.SharedLibrary.Response
 {
-    public record Response(bool Success = false, string Message = null)
-    {
-
-    }
+    public record Response(bool Success = false, string Message = null);
 }
