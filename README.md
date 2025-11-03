@@ -12,3 +12,12 @@ Overview and instructions
 - Startup projects to run together: EmailNotifications.API, EmailNotifications.UI, EmailNotifications.EmailQueueConsumer.
 - For testing the loading of xml, use the sample-load-data.xml from root folder in the Admin part from UI project.
 
+Admin UI:
+<img width="1422" height="533" alt="image" src="https://github.com/user-attachments/assets/5f4351a9-befd-4cc8-beb3-3afd44bc3f93" />
+Clients UI:
+<img width="1431" height="519" alt="image" src="https://github.com/user-attachments/assets/3069f98e-4d2b-4c7c-86cb-78b4de9c4ba9" />
+Templates UI:
+<img width="1411" height="764" alt="image" src="https://github.com/user-attachments/assets/6f7f23d2-b372-44c0-976e-1aaff2dcd3ab" />
+Swagger:
+<img width="1498" height="823" alt="image" src="https://github.com/user-attachments/assets/be0366b1-cb0a-4845-8f78-cbaff21245e5" />
+
